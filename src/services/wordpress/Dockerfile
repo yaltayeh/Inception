@@ -35,7 +35,7 @@ RUN sed -i 's|^listen = .*|listen = 0.0.0.0:9000|' /etc/php*/php-fpm.d/*
 # Expose PHP-FPM port
 EXPOSE 9000
 
-COPY website/* /var/www/html/
+COPY website/ /var/www/html/
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh

@@ -44,8 +44,8 @@ if [ ! -d "$DATA_DIR/mysql" ]; then
     fi
 
     # Stop temporary server
-    kill "$pid"
-    # Wait for the server to shut down gracefully
+    mysqladmin --socket=/tmp/mysql.sock -uroot shutdown
+    # Wait for server to stop
     wait "$pid"
 fi
 

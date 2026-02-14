@@ -17,9 +17,11 @@ export WORDPRESS_SECURE_AUTH_SALT=${WORDPRESS_SECURE_AUTH_SALT:-$(head -c 32 /de
 export WORDPRESS_LOGGED_IN_SALT=${WORDPRESS_LOGGED_IN_SALT:-$(head -c 32 /dev/urandom | base64)}
 export WORDPRESS_NONCE_SALT=${WORDPRESS_NONCE_SALT:-$(head -c 32 /dev/urandom | base64)}
 
-filter='^(WORDPRESS_|WP_)$'
+# filter='^(WORDPRESS_|WP_)$'
 
 defined_envs=$(printf '${%s} ' $(awk "END { for (name in ENVIRON) { print ( name ~ /${filter}/ ) ? name : \"\" } }" < /dev/null ))
+
+echo "defined_envs:" $defined_envs
 
 envsubst "$defined_envs" < /var/www/html/wp-config-sample.php > /var/www/html/wp-config.php
 

@@ -1,5 +1,5 @@
-include mime.types;
-include fastcgi_params;
+# include mime.types;
+# include fastcgi_params;
 
 server {
 	listen 80;
