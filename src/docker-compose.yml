@@ -20,13 +20,28 @@ services:
       - "80:80"
       - "443:443"
   
-    # depends_on:
-    #   - mariadb
+    depends_on:
+      - wordpress
     environment:
       DOMAIN_NAME: ${DOMAIN_NAME:-localhost}
     volumes:
-      - ./services/nginx/html:/var/www/html:ro
+      - web_data:/var/www/html:ro
+
+  wordpress:
+    build: ./services/wordpress
+    container_name: wordpress
+    depends_on:
+      - mariadb
+    environment:
+      - WORDPRESS_DB_HOST=mariadb:3306
+      - WORDPRESS_DB_USER=my_user
+      - WORDPRESS_DB_PASSWORD=my_password
+      - WORDPRESS_DB_NAME=my_database
+    ports:
+      - "9000:9000"
+    volumes:
+      - web_data:/var/www/html
 
 volumes:
   mariadb_data:
-  # web_data:
+  web_data:
