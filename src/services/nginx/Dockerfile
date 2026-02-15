@@ -5,9 +5,6 @@ RUN apt-get update && \
 	apt-get install -y nginx gettext-base && \
 	rm -rf /var/lib/apt/lists/*
 
-# Copy SSL certificates
-COPY ./ssl /etc/nginx/ssl
-
 # Copy templates
 COPY ./templates /etc/nginx/templates
 

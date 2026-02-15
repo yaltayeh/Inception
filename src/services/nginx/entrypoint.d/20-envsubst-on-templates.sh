@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 ME=$(basename "$0")
 
 # https://github.com/nginx/docker-nginx/blob/ffe72978e08c5b0dacecd604e528f6d0741a9ae5/entrypoint/20-envsubst-on-templates.sh

@@ -2,8 +2,18 @@ FROM debian:12-slim
 
 # Install PHP, extensions, and dependencies
 RUN apt-get update && apt-get install -y \
-    php-fpm php-mysql php-gd php-xml php-curl \
-    mariadb-client curl unzip less git \
+    php-fpm \
+    php-mysql \
+    php-gd \
+    php-xml \
+    php-curl \
+    php-mbstring \
+    ca-certificates \
+    mariadb-client \
+    curl \
+    unzip \
+    less \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
 # Install WP-CLI

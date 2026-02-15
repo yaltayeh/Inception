@@ -1,6 +1,21 @@
 #!/bin/bash
 set -e
 
+read_secret() {
+    local secret_name="$1"
+    local secret_default="$2"
+
+    if [ -f "/run/secrets/${secret_name}" ]; then
+        cat "/run/secrets/${secret_name}"
+    else
+        echo "Warning: Secret '${secret_name}' not found. Using default value." >&2
+        echo "${secret_default}"
+    fi
+}
+
+MYSQL_ROOT_PASSWORD=$(read_secret mysql_root_password "")
+MYSQL_PASSWORD=$(read_secret mysql_user_password "")
+
 # Ensure socket directory exists
 mkdir -p /run/mysqld
 chown mysql:mysql /run/mysqld
