@@ -14,7 +14,7 @@ if [ ! -f /var/www/html/wp-config.php ]; then
                      --dbpass="$WORDPRESS_DB_PASSWORD" \
                      --dbhost="$WORDPRESS_DB_HOST" \
                      --allow-root
-    wp core install --url="https://yaltayeh.42.fr" \
+    wp core install --url="$DOMAIN_NAME \
                     --title="My Site" \
                     --admin_user="admin" \
                     --admin_password="adminpassword" \
