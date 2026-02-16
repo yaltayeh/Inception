@@ -13,6 +13,7 @@ services:
     secrets:
       - mysql_root_password
       - mysql_user_password
+    restart: unless-stopped
 
   nginx:
     build: ./services/nginx
@@ -31,6 +32,7 @@ services:
         target: nginx_ssl_keys/${DOMAIN_NAME:-localhost}.key
       - source: nginx_ssl_cert
         target: nginx_ssl_keys/${DOMAIN_NAME:-localhost}.crt
+    restart: unless-stopped
 
   wordpress:
     build: ./services/wordpress
@@ -54,10 +56,21 @@ services:
       - wordpress_admin_password
       - source: mysql_user_password
         target: wordpress_user_password
+    restart: unless-stopped
 
 volumes:
   mariadb_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/${USER}/data/mariadb
+      o: bind
   web_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/${USER}/data/web
+      o: bind
 
 secrets:
   wordpress_admin_password:

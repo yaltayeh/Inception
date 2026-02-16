@@ -1,20 +1,22 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
 read_secret() {
     local secret_name="$1"
-    local secret_default="$2"
+    local env_var_name="$2"
+    local secret_default="$3"
 
     if [ -f "/run/secrets/${secret_name}" ]; then
         cat "/run/secrets/${secret_name}"
     else
-        echo "Warning: Secret '${secret_name}' not found. Using default value." >&2
-        echo "${secret_default}"
+        echo "${!env_var_name:-$secret_default}"
     fi
 }
 
-MYSQL_ROOT_PASSWORD=$(read_secret mysql_root_password "")
-MYSQL_PASSWORD=$(read_secret mysql_user_password "")
+MYSQL_DATABASE=$(read_secret mysql_database MYSQL_DATABASE "my_database")
+MYSQL_USER=$(read_secret mysql_user MYSQL_USER "my_user")
+MYSQL_USER_PASSWORD=$(read_secret mysql_user_password MYSQL_USER_PASSWORD "user_password")
+MYSQL_ROOT_PASSWORD=$(read_secret mysql_root_password MYSQL_ROOT_PASSWORD "root_password")
 
 # Ensure socket directory exists
 mkdir -p /run/mysqld
@@ -52,8 +54,8 @@ if [ ! -d "$DATA_DIR/mysql" ]; then
         mysql -uroot --socket=/tmp/mysql.sock -p"${MYSQL_ROOT_PASSWORD}" -e "CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\`;"
     fi
     echo "Database '${MYSQL_DATABASE}' created (if it did not already exist)."
-    if [ -n "$MYSQL_USER" ] && [ -n "$MYSQL_PASSWORD" ]; then
-        mysql -uroot --socket=/tmp/mysql.sock -p"${MYSQL_ROOT_PASSWORD}" -e "CREATE USER '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';"
+    if [ -n "$MYSQL_USER" ] && [ -n "$MYSQL_USER_PASSWORD" ]; then
+        mysql -uroot --socket=/tmp/mysql.sock -p"${MYSQL_ROOT_PASSWORD}" -e "CREATE USER '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_USER_PASSWORD}';"
         mysql -uroot --socket=/tmp/mysql.sock -p"${MYSQL_ROOT_PASSWORD}" -e "GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE:-*}\`.* TO '${MYSQL_USER}'@'%';"
         mysql -uroot --socket=/tmp/mysql.sock -p"${MYSQL_ROOT_PASSWORD}" -e "FLUSH PRIVILEGES;"
     fi
