@@ -1,5 +1,12 @@
-# 42Inception
+*This project has been created as part of the 42 curriculum by*
 
+# 42 Inception
+
+## Description
+
+## Instructions
+
+## Resources
 
 ```
 sudo echo "127.0.0.1	yaltayeh.42.fr" >> /etc/hosts

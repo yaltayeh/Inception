@@ -4,12 +4,13 @@ set -e
 # Function to read secrets from Docker secrets if available, otherwise exit with an error
 read_secret() {
     local secret_name="$1"
+    local secret_value="$2"
 
     if [ -f "/run/secrets/${secret_name}" ]; then
         cat "/run/secrets/${secret_name}"
     else
-        echo "Error: Secret '${secret_name}' not found." >&2
-        exit 1
+        echo "Warning: Secret '${secret_name}' not found in Docker secrets. Using environment variable value." >&2
+        echo "$secret_value"
     fi
 }
 
@@ -35,8 +36,8 @@ install_wordpress() {
     WORDPRESS_ADMIN_PASSWORD=$(read_secret wordpress_admin_password)
     WORDPRESS_SITE_TITLE=${WORDPRESS_SITE_TITLE:-My WordPress Site}
     WORDPRESS_LOCALE=${WORDPRESS_LOCALE:-en_US}
-
-    wp core download --allow-root
+    
+    wp core download --locale="$WORDPRESS_LOCALE" --allow-root
 
     wp config create --dbname="$WORDPRESS_DB_NAME" \
                     --dbuser="$WORDPRESS_DB_USER" \
@@ -44,15 +45,19 @@ install_wordpress() {
                     --dbhost="$WORDPRESS_DB_HOST" \
                     --allow-root
 
-
     wp core install --url="$DOMAIN_NAME" \
                     --title="$WORDPRESS_SITE_TITLE" \
                     --admin_user="$WORDPRESS_ADMIN_USER" \
                     --admin_password="$WORDPRESS_ADMIN_PASSWORD" \
                     --admin_email="$WORDPRESS_ADMIN_EMAIL" \
                     --allow-root 
-          
-    wp language core install "$WORDPRESS_LOCALE" --activate --allow-root
+    
+    # Set Template and activate it
+    if [ -n "$WORDPRESS_THEME" ]; then
+        wp theme install "$WORDPRESS_THEME" --activate --allow-root
+    fi
+    
+    
 }
 
 echo "Starting WordPress entrypoint script..."
