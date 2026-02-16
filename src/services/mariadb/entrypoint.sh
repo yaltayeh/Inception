@@ -9,7 +9,7 @@ read_secret() {
     if [ -f "/run/secrets/${secret_name}" ]; then
         cat "/run/secrets/${secret_name}"
     else
-        echo "${!env_var_name:-$secret_default}"
+        echo "${env_var_name:-$secret_default}"
     fi
 }
 

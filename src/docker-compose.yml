@@ -74,12 +74,12 @@ volumes:
 
 secrets:
   wordpress_admin_password:
-    file: ./secrets/wordpress_admin_password.txt
+    file: ../secrets/wordpress_admin_password.txt
   mysql_root_password:
-    file: ./secrets/mysql_root_password.txt
+    file: ../secrets/mysql_root_password.txt
   mysql_user_password:
-    file: ./secrets/mysql_user_password.txt
+    file: ../secrets/mysql_user_password.txt
   nginx_ssl_key:
-    file: ./secrets/${DOMAIN_NAME:-localhost}.key
+    file: ../secrets/${DOMAIN_NAME:-localhost}.key
   nginx_ssl_cert:
-    file: ./secrets/${DOMAIN_NAME:-localhost}.crt
+    file: ../secrets/${DOMAIN_NAME:-localhost}.crt

@@ -2,25 +2,22 @@
 all:
 	mkdir -p /home/${USER}/data/mariadb
 	mkdir -p /home/${USER}/data/web
-	docker-compose up -d -f src/docker-compose.yml
+	docker compose --env-file .env -f src/docker-compose.yml up -d 
 
 config:
-	./configuration.sh
+	./scripts/configuration.sh
 
 build:
-	docker-compose build -f src/docker-compose.yml
+	docker compose --env-file .env -f src/docker-compose.yml build 
+
+logs:
+	docker compose --env-file .env -f src/docker-compose.yml logs 
+
 
 clean:
-	docker-compose down -f src/docker-compose.yml
+	docker compose --env-file .env -f src/docker-compose.yml down 
 
 fclean:
-	@echo "This will remove all containers, volumes, and networks created by docker-compose. Are you sure? (y/n)"
-	@read answer; \
-	if [ "$$answer" = "y" ]; then \
-		docker-compose down -v -f src/docker-compose.yml; \
-		echo "All containers, volumes, and networks have been removed."; \
-	else \
-		echo "Operation cancelled."; \
-	fi
+	./scripts/fclean.sh
 
 .PHONY: all config build clean fclean

@@ -1,9 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
-cp .env.example .env
+cp env.example .env
 
-source .env
+. .env
 
 mkdir -p secrets
 

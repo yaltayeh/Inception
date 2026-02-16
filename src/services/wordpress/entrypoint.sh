@@ -37,6 +37,11 @@ install_wordpress() {
     WORDPRESS_SITE_TITLE=${WORDPRESS_SITE_TITLE:-My WordPress Site}
     WORDPRESS_LOCALE=${WORDPRESS_LOCALE:-en_US}
     
+    until wp db check --allow-root; do
+        echo "Waiting for database connection..."
+        sleep 1
+    done
+
     wp core download --locale="$WORDPRESS_LOCALE" --allow-root
 
     wp config create --dbname="$WORDPRESS_DB_NAME" \
