@@ -8,20 +8,27 @@ work with docker compose
 ### how to run project
 
 #### 1. Clone the Repository
-```git clone https://github.com/your-username/your-repo-name.git```
+```git clone https://github.com/yaltayeh/Inception.git```
 
 #### 2. Navigate to the Project Directory
-```cd your-repo-name/src```
+```cd Inception```
 
-#### 3. Environment setup
+#### 3. Configure project settings
+``` 
+make config
+
+# This will create a .env file with default values. You can edit this file to customize your setup, such as setting the DOMAIN_NAME, database credentials, and admin credentials for WordPress.
 ```
-cp env.example .env
-```
-- Open the .env file and update the environment variables as needed, such as database credentials, WordPress admin password username, and site title.
+
 
 #### 4. Start the Project
 ```
-docker-compose up -d
+echo "127.0.0.1 yaltayeh.42.fr" | sudo tee -a /etc/hosts
+
+make build
+
+make
+
 ```
 
 #### 5. Access the Website and Admin Panel
