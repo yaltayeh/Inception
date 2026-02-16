@@ -4,13 +4,12 @@ set -e
 # Function to read secrets from Docker secrets if available, otherwise exit with an error
 read_secret() {
     local secret_name="$1"
-    local secret_value="$2"
 
     if [ -f "/run/secrets/${secret_name}" ]; then
         cat "/run/secrets/${secret_name}"
     else
-        echo "Warning: Secret '${secret_name}' not found in Docker secrets. Using environment variable value." >&2
-        echo "$secret_value"
+        echo "Error: Secret '${secret_name}' not found in /run/secrets/${secret_name}." >&2
+        exit 1
     fi
 }
 
@@ -36,11 +35,6 @@ install_wordpress() {
     WORDPRESS_ADMIN_PASSWORD=$(read_secret wordpress_admin_password)
     WORDPRESS_SITE_TITLE=${WORDPRESS_SITE_TITLE:-My WordPress Site}
     WORDPRESS_LOCALE=${WORDPRESS_LOCALE:-en_US}
-    
-    until wp db check --allow-root; do
-        echo "Waiting for database connection..."
-        sleep 1
-    done
 
     wp core download --locale="$WORDPRESS_LOCALE" --allow-root
 

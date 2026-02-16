@@ -1,7 +1,7 @@
 
 all:
-	mkdir -p /home/${USER}/data/mariadb
-	mkdir -p /home/${USER}/data/web
+	mkdir -p ~/data/mariadb
+	mkdir -p ~/data/web
 	docker compose --env-file .env -f src/docker-compose.yml up -d 
 
 config:
