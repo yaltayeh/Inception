@@ -13,11 +13,15 @@ build:
 logs:
 	docker compose --env-file .env -f src/docker-compose.yml logs 
 
-
 clean:
 	docker compose --env-file .env -f src/docker-compose.yml down 
 
 fclean:
 	./scripts/fclean.sh
+
+re: fclean build all
+
+healthcheck:
+	./scripts/healthcheck.sh
 
 .PHONY: all config build clean fclean

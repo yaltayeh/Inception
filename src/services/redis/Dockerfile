@@ -17,6 +17,9 @@ EXPOSE 6379
 # Run as redis user
 USER redis
 
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD redis-cli ping | grep PONG || exit 1
+
 # Use exec form (important for PID 1)
-ENTRYPOINT [ "redis-server", "--appendonly", "yes", "--dir", "/data" ]
+ENTRYPOINT [ "redis-server", "--protected-mode", "no", "--appendonly", "yes", "--dir", "/data" ]
 CMD [ ]

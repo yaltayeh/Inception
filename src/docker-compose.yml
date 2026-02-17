@@ -19,7 +19,6 @@ services:
     build: ./services/nginx
     container_name: nginx
     ports:
-      - "80:80"
       - "443:443"
     depends_on:
       - wordpress
@@ -39,6 +38,7 @@ services:
     container_name: wordpress
     depends_on:
       - mariadb
+      - redis
     environment:
       - WORDPRESS_DB_HOST=mariadb
       - WORDPRESS_DB_USER=${MYSQL_USER:-wordpress}
@@ -48,14 +48,56 @@ services:
       - WORDPRESS_ADMIN_EMAIL=${WORDPRESS_ADMIN_EMAIL:-admin@example.com}
       - WORDPRESS_SITE_TITLE=${WORDPRESS_SITE_TITLE:-My WordPress Site}
       - WORDPRESS_LOCALE=${WORDPRESS_LOCALE:-en_US}
-    ports:
-      - "9000:9000"
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     volumes:
       - web_data:/var/www/html
     secrets:
       - wordpress_admin_password
       - source: mysql_user_password
         target: wordpress_user_password
+    restart: unless-stopped
+
+  redis:
+    build: ./services/redis
+    container_name: redis
+
+  n8n:
+    build: ./services/n8n
+    container_name: n8n
+    environment:
+      - N8N_HOST=n8n.${DOMAIN_NAME:-localhost}
+      - N8N_PORT=5678
+      - WEBHOOK_URL=https://n8n.${DOMAIN_NAME:-localhost}/
+      - NODE_ENV=production
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=strongpassword
+      - N8N_USER_EMAIL=admin@${DOMAIN_NAME:-localhost}
+      - N8N_USER_FIRST_NAME=Admin
+      - N8N_USER_LAST_NAME=User
+    volumes:
+      - n8n_data:/home/node/.n8n
+    restart: unless-stopped
+
+  ftp_server:
+    build: ./services/ftp_server
+    container_name: ftp_server
+    ports:
+      - "2222:22"
+    environment:
+      - FTP_USER=${FTP_USER:-ftpuser}
+      - FTP_PASSWORD=${FTP_PASSWORD:-ftppassword}
+      - FTP_HOME=/etc/www/html
+    volumes:
+      - web_data:/etc/www/html
+    secrets:
+      - ftp_password
+    restart: unless-stopped
+
+  adminer:
+    build: ./services/adminer
+    container_name: adminer
     restart: unless-stopped
 
 volumes:
@@ -71,6 +113,12 @@ volumes:
     #   type: none
     #   device: ~/data/web
     #   o: bind
+  n8n_data:
+    # driver: local
+    # driver_opts:
+    #   type: none
+    #   device: ~/data/n8n
+    #   o: bind
 
 secrets:
   wordpress_admin_password:
@@ -83,3 +131,5 @@ secrets:
     file: ../secrets/${DOMAIN_NAME:-localhost}.key
   nginx_ssl_cert:
     file: ../secrets/${DOMAIN_NAME:-localhost}.crt
+  ftp_password:
+    file: ../secrets/ftp_password.txt

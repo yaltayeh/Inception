@@ -1,27 +1,35 @@
 #!/bin/sh
 set -e
 
-# Function to read secrets from Docker secrets if available, otherwise exit with an error
+# Function to read secrets from files or environment variables
 read_secret() {
     local secret_name="$1"
+    local env_var_name="$2"
+    local secret_default="$3"
 
     if [ -f "/run/secrets/${secret_name}" ]; then
         cat "/run/secrets/${secret_name}"
     else
-        echo "Error: Secret '${secret_name}' not found in /run/secrets/${secret_name}." >&2
-        exit 1
+        echo "${env_var_name:-$secret_default}"
     fi
 }
 
-check_env() {
-    local var_name="$1"
-    local var_value="${var_name}"
+DOMAIN_NAME=$(read_secret domain_name $DOMAIN_NAME "localhost")
 
-    if [ -z "$var_value" ]; then
-        echo "Error: Environment variable '${var_name}' is not set." >&2
-        exit 1
-    fi
-}
+WORDPRESS_DB_HOST=$(read_secret WORDPRESS_DB_HOST $WORDPRESS_DB_HOST "db")
+WORDPRESS_DB_NAME=$(read_secret wordpress_database $WORDPRESS_DB_NAME "wordpress")
+WORDPRESS_DB_PASSWORD=$(read_secret wordpress_user_password $WORDPRESS_DB_PASSWORD "password")
+WORDPRESS_DB_USER=$(read_secret wordpress_user $WORDPRESS_DB_USER "wordpress")
+
+WORDPRESS_ADMIN_USER=$(read_secret wordpress_admin_user $WORDPRESS_ADMIN_USER "admin")
+WORDPRESS_ADMIN_PASSWORD=$(read_secret wordpress_admin_password $WORDPRESS_ADMIN_PASSWORD "password")
+WORDPRESS_ADMIN_EMAIL=$(read_secret wordpress_admin_email $WORDPRESS_ADMIN_EMAIL "admin@example.com")
+
+WORDPRESS_SITE_TITLE=${WORDPRESS_SITE_TITLE:-My WordPress Site}
+WORDPRESS_LOCALE=${WORDPRESS_LOCALE:-en_US}
+
+REDIS_HOST=$(read_secret redis_host $REDIS_HOST "")
+REDIS_PORT=$(read_secret redis_port $REDIS_PORT "6379")
 
 install_redis_cache() {
     echo "Installing Redis plugin..."
@@ -35,19 +43,13 @@ install_redis_cache() {
 }
 
 install_wordpress() {
-    check_env WORDPRESS_DB_HOST
-    check_env WORDPRESS_DB_USER
-    check_env WORDPRESS_DB_NAME
-    check_env DOMAIN_NAME
-    check_env WORDPRESS_ADMIN_USER
-    check_env WORDPRESS_ADMIN_EMAIL
+    
+    until mysqladmin ping -h"$WORDPRESS_DB_HOST" -u"$WORDPRESS_DB_USER" -p"$WORDPRESS_DB_PASSWORD" &>/dev/null; do
+        echo "Waiting for database connection..."
+        sleep 0.5
+    done
 
-    WORDPRESS_DB_PASSWORD=$(read_secret wordpress_user_password )
-    WORDPRESS_ADMIN_PASSWORD=$(read_secret wordpress_admin_password)
-    WORDPRESS_SITE_TITLE=${WORDPRESS_SITE_TITLE:-My WordPress Site}
-    WORDPRESS_LOCALE=${WORDPRESS_LOCALE:-en_US}
-
-    wp core download --locale="$WORDPRESS_LOCALE" --allow-root
+    wp core download --allow-root
 
     wp config create --dbname="$WORDPRESS_DB_NAME" \
                     --dbuser="$WORDPRESS_DB_USER" \
@@ -60,7 +62,7 @@ install_wordpress() {
                     --admin_user="$WORDPRESS_ADMIN_USER" \
                     --admin_password="$WORDPRESS_ADMIN_PASSWORD" \
                     --admin_email="$WORDPRESS_ADMIN_EMAIL" \
-                    --allow-root 
+                    --allow-root
 
     if [ -n "$REDIS_HOST" ] && [ -n "$REDIS_PORT" ]; then
         install_redis_cache

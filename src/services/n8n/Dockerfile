@@ -34,6 +34,9 @@ USER node
 
 EXPOSE 5678
 
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD curl -f http://localhost:5678/health || exit 1
+
 # Important: exec form for proper PID 1 handling
 ENTRYPOINT ["n8n"]
 CMD [ ]

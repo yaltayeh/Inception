@@ -22,8 +22,8 @@ RUN rm -rf /var/lib/mysql && \
     chown -R mysql:mysql /var/lib/mysql
 
 # Healthcheck using runtime environment variables
-HEALTHCHECK --interval=10s --timeout=5s --start-period=30s \
-    CMD bash -c 'mysqladmin ping -uroot -p"$MYSQL_ROOT_PASSWORD" || exit 1'
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD mysqladmin ping -uroot -p"$MYSQL_ROOT_PASSWORD" || exit 1
 
 # Entrypoint + default CMD
 # ENTRYPOINT ["tail", "-f", "/dev/null"]

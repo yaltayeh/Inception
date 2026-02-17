@@ -45,5 +45,8 @@ COPY pool.d/ /etc/php/8.2/fpm/pool.d/
 # Start PHP-FPM
 WORKDIR /var/www/html
 
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD curl -f http://localhost/wp-login.php || exit 1
+
 ENTRYPOINT [ "/entrypoint.sh" ]
 CMD [ "php-fpm8.2", "-F" ]

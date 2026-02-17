@@ -20,3 +20,4 @@ fi
 echo "Admin1234" > secrets/wordpress_admin_password.txt
 echo "Root1234" > secrets/mysql_root_password.txt
 echo "User1234" > secrets/mysql_user_password.txt
+echo "Pass1234" > secrets/ftp_password.txt
