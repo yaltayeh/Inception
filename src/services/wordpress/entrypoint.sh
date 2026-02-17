@@ -23,6 +23,17 @@ check_env() {
     fi
 }
 
+install_redis_cache() {
+    echo "Installing Redis plugin..."
+    wp plugin install redis-cache --activate --allow-root
+
+    wp config set WP_REDIS_HOST $REDIS_HOST --allow-root
+    wp config set WP_REDIS_PORT $REDIS_PORT --raw --allow-root
+
+    wp redis enable --allow-root
+    echo "Redis cache enabled."
+}
+
 install_wordpress() {
     check_env WORDPRESS_DB_HOST
     check_env WORDPRESS_DB_USER
@@ -50,20 +61,16 @@ install_wordpress() {
                     --admin_password="$WORDPRESS_ADMIN_PASSWORD" \
                     --admin_email="$WORDPRESS_ADMIN_EMAIL" \
                     --allow-root 
-    
-    # Set Template and activate it
-    if [ -n "$WORDPRESS_THEME" ]; then
-        wp theme install "$WORDPRESS_THEME" --activate --allow-root
+
+    if [ -n "$REDIS_HOST" ] && [ -n "$REDIS_PORT" ]; then
+        install_redis_cache
     fi
-    
-    
 }
 
 echo "Starting WordPress entrypoint script..."
 if [ ! -f /var/www/html/wp-config.php ]; then
     echo "WordPress not found, installing..."
     install_wordpress
-
 fi
 
 exec "$@"

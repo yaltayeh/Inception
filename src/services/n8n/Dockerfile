@@ -35,4 +35,5 @@ USER node
 EXPOSE 5678
 
 # Important: exec form for proper PID 1 handling
-CMD ["n8n"]
+ENTRYPOINT ["n8n"]
+CMD [ ]
