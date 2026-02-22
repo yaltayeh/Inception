@@ -1,118 +1,106 @@
-*This project has been created as part of the 42 curriculum by yaltayeh.*
+This project has been created as part of the 42 curriculum by yaltayeh.
 
-# Inception
+# Microservices Lab 
 
-## Description
 
-This project aims to broaden the knowledge of system administration by using Docker. The goal is to virtualize several Docker images, creating into them a personal virtual machine.
+# Description
 
-The "Inception" project involves setting up a small infrastructure composed of different services under specific rules. The entire infrastructure must be built using `docker compose`.
+This project is a microservices lab that demonstrates the use of Docker and Docker Compose to create and manage multiple services. The project includes a simple two web application one in nextjs and the other in wordpress, a mariaDB database, and a adminer database management tool. The services are defined in a `docker-compose.yml` file and can be easily started, stopped, and managed using `make` commands.
+
+## structure
+```
+src
+├── docker-compose.yml
+└── services
+    ├── adminer
+    ├── ftp_server
+    ├── mariadb
+    ├── n8n
+    ├── nextjs
+    ├── nginx
+    ├── redis
+    └── wordpress
+```
+
+## Virtual Machines vs Docker
+
+docker is a child process isolated by the kernel, while a virtual machine is a full operating system running on top of a hypervisor. Docker is more lightweight and faster to start than a virtual machine, but it may not provide the same level of isolation and security as a virtual machine.
+
+
+## Secrets vs Environment Variables
+
+Secrets are a more secure way to store sensitive information, such as passwords and API keys, than environment variables. Secrets are encrypted and can only be accessed by authorized users, while environment variables can be easily accessed by anyone who has access to the system.
+
+## Docker Network vs Host Network
+
+Docker network is a virtual network that allows containers to communicate with each other, while host network allows containers to use the host's network stack. Docker network provides better isolation and security, while host network can be faster and more efficient for certain use cases.
+
+## Docker Volumes vs Bind Mounts
+
+Docker volumes are a more flexible and portable way to store data than bind mounts. Docker volumes are managed by Docker and can be easily shared between containers, while bind mounts are tied to the host's file system and may not work well across different environments.
+
+notes: when create the file in container by root user, the file will be owned by root and may not be accessible by other users. To avoid this issue, you can use the `--user` flag when running the container to specify a non-root user, or you can change the ownership of the file after it is created. For example, you can use the `chown` command to change the ownership of the file to a non-root user.
 
 ## Instructions
 
-### Prerequisites
-- Docker Engine
-- Docker Compose
-- Make
+### 1. install docker
+#### open https://docs.docker.com/engine/install and follow the instructions for your operating system.
+--------
+### 2. install docker-compose
+#### open https://docs.docker.com/compose/install and follow the instructions for your operating system.
+--------
+### 3. now you can run the following command to start the services:
+``` sh
+make config
+```
 
-### Installation & Execution
+``` sh
+make build
+```
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/yaltayeh/Inception.git inception
-    cd inception
-    ```
+``` sh
+make
+```
 
-2.  **Configure local domain:**
-    Add the following line to your `/etc/hosts` file to map the domain name to your local machine:
-    ```bash
-    127.0.0.1 yaltayeh.42.fr
-    ```
+you can also run the following command to stop the services:
+``` sh
+make stop
+```
 
-3.  **Setup environment:**
-    Create the necessary configuration environment variables and folders.
-    ```bash
-    make config
-    ```
-    *Note: Ensure your `.env` file and secrets are correctly populated in `src/.env` and `secrets/` respectively.*
+and use the following command to check the status of the services:
+``` sh
+make status
 
-4.  **Build and Run:**
-    Use the Makefile to build the images and start the containers.
-    ```bash
-    make
-    ```
-    This command will build the Docker images and start the network in detached mode.
+```
 
-5.  **Stop:**
-    To stop the services:
-    ```bash
-    make clean
-    ```
-    To clean up everything (including images and volumes):
-    ```bash
-    make fclean
-    ```
+and use the following command to clean up the services:
+``` sh
+make clean
+# for remove the images and volumes, you can use the following command:
+make fclean
+```
+
+and use the following command to view the logs of the services:
+``` sh
+make logs
+```
+
 
 ## Resources
+use https://docs.docker.com/ai/gordon/ to learn more about docker and its features.
 
-### References
-- [Docker Documentation](https://docs.docker.com/)
-- [Docker Compose Documentation](https://docs.docker.com/compose/)
-- [NGINX Documentation](https://nginx.org/en/docs/)
-- [WordPress Docker Image](https://hub.docker.com/_/wordpress)
-- [MariaDB Docker Image](https://hub.docker.com/_/mariadb)
+ask chatgpt for help if you have any questions or issues with the project.
 
-### AI Usage
-Artificial Intelligence tools were utilized in this project for the following tasks:
-- **Debugging Configuration:** AI assisted in troubleshooting syntax errors within `docker-compose.yml` and NGINX configuration files.
-- **Script Optimization:** Suggestions were used to refine shell scripts for entrypoints, ensuring robust error handling.
-- **Documentation:** AI helped outline and structure the documentation files (README, USER_DOC, DEV_DOC) to meet the specific requirements of the subject.
+عليك أن تتعلم Docker الآن!! // Docker Containers 101
+https://youtu.be/eGz9DS-aIeY
 
-## Project Description
+Production Deployment on VPS using Docker | رفع تطبيق على استضافة باستخدام دوكر
+https://youtu.be/C7aooGtKq8Y
 
-This project consists of setting up a complete web server infrastructure using Docker compose. The stack includes:
-- A Docker container running **NGINX** with TLSv1.2 or TLSv1.3 only.
-- A Docker container running **WordPress** + **php-fpm**.
-- A Docker container running **MariaDB**.
-- A Docker volume for the WordPress database.
-- A Docker volume for the WordPress website files.
-- A Docker network establishing the connection between containers.
+شبكات الحاسوب: شرح تصميم الـ OSI وكيف يتم نقل البيانات؟ وما هيه ال Physical layer ؟ (3)
+https://youtu.be/9rsYu0es3XE
 
-### Design Choices & Comparisons
+## Usage
+open [USER_DOC.md](docs/USER_DOC.md) for more information about how to use the services and access the applications.
 
-#### Virtual Machines vs Docker
-| Feature | Virtual Machines (VM) | Docker (Containers) |
-| :--- | :--- | :--- |
-| **Architecture** | Runs a full guest OS on a hypervisor (hardware virtualization). | Shares the host OS kernel; isolates the application process (OS-level virtualization). |
-| **Size** | Heavy (GBs) due to full OS. | Lightweight (MBs) as it only contains app and dependencies. |
-| **Boot Time** | Minutes (OS boot). | Seconds (Process start). |
-| **Isolation** | High isolation (distinct kernel). | Process-level isolation (shared kernel), less secure by default but sufficient for most apps. |
-
-*Choice:* Docker was chosen for its lightweight nature and efficiency in resource usage compared to running three full VMs.
-
-#### Secrets vs Environment Variables
-| Feature | Environment Variables | Docker Secrets |
-| :--- | :--- | :--- |
-| **Storage** | Stored in plain text in the container configuration or `docker-compose` file. | Stored encrypted on the Swarm manager (or locally mounted as files in non-Swarm mode). |
-| **Visibility** | Visible via `docker inspect` or `printenv` inside the container. | Only available as files mounted at `/run/secrets/` inside the container. |
-| **Security** | Low. Easy to leak in logs or inspection. | High. Intended for sensitive data like passwords and keys. |
-
-*Choice:* We use **Docker Secrets** for sensitive credentials (database passwords, admin passwords) to prevent them from being exposed in environment variables or command history.
-
-#### Docker Network vs Host Network
-| Feature | Docker Network (Bridge/Overlay) | Host Network |
-| :--- | :--- | :--- |
-| **Isolation** | Containers have their own IP and port space. Ports must be explicitly published. | Container shares the host's networking namespace directly. |
-| **Security** | High. Only specified ports are exposed. | Lower. Container has full access to the host's network interfaces. |
-| **Port Conflicts** | No conflicts between containers on different networks; easy to map to different host ports. | Potential conflicts if multiple services try to bind the same port on the host. |
-
-*Choice:* A custom **Docker Bridge Network** is used to allow containers to communicate with each other internally (e.g., WordPress talking to MariaDB) without exposing internal services to the outside world, exposing only necessary ports (443) via NGINX.
-
-#### Docker Volumes vs Bind Mounts
-| Feature | Docker Volumes | Bind Mounts |
-| :--- | :--- | :--- |
-| **Management** | Managed by Docker (`/var/lib/docker/volumes/`). Easier to back up and migrate. | Managed by the user. Refers to a specific path on the host filesystem. |
-| **Portability** | High. Abstracted away from the host file structure. | Low. Depends on the host's specific directory structure. |
-| **Use Case** | Persisting data generated by and used by Docker containers. | Sharing config files or source code from the host to the container (dev environments). |
-
-*Choice:* **Docker Volumes** are used for database persistence (`mariadb_data`) and web files (`web_data`) to ensure data persists across container restarts and is managed entirely by Docker.
+and open [DEV_DOC.md](docs/DEV_DOC.md) for more information about how to develop and customize the services and applications.
