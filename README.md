@@ -48,8 +48,17 @@ notes: when create the file in container by root user, the file will be owned by
 --------
 ### 2. install docker-compose
 #### open https://docs.docker.com/compose/install and follow the instructions for your operating system.
+
 --------
-### 3. now you can run the following command to start the services:
+### 3. Add your domain to hosts /etc/hosts (requierd sudo permisstion)
+
+``` sh
+sudo vim /etc/hosts
+# and add 127.0.0.1   yaltayeh.42.fr    
+```
+
+--------
+### 4. now you can run the following command to start the services:
 ``` sh
 make config
 ```
