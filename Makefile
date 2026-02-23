@@ -1,14 +1,16 @@
 
-all:
+all: up
+
+up: build
 	mkdir -p ~/data/mariadb
 	mkdir -p ~/data/web
 	mkdir -p ~/data/n8n
-	docker compose --env-file .env -f src/docker-compose.yml up -d 
+	docker compose --env-file .env -f src/docker-compose.yml up -d
 
 config:
 	./scripts/configuration.sh
 
-build:
+build: src/docker-compose.yml
 	docker compose --env-file .env -f src/docker-compose.yml build 
 
 logs:
