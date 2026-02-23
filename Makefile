@@ -2,6 +2,7 @@
 all:
 	mkdir -p ~/data/mariadb
 	mkdir -p ~/data/web
+	mkdir -p ~/data/n8n_data
 	docker compose --env-file .env -f src/docker-compose.yml up -d 
 
 config:
