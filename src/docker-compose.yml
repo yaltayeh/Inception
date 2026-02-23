@@ -102,23 +102,23 @@ services:
 
 volumes:
   mariadb_data:
-    # driver: local
-    # driver_opts:
-    #   type: none
-    #   device: ~/data/mariadb
-    #   o: bind
+    driver: local
+    driver_opts:
+      type: none
+      device: ${HOME}/data/mariadb
+      o: bind
   web_data:
-    # driver: local
-    # driver_opts:
-    #   type: none
-    #   device: ~/data/web
-    #   o: bind
+    driver: local
+    driver_opts:
+      type: none
+      device: ${HOME}/data/web
+      o: bind
   n8n_data:
-    # driver: local
-    # driver_opts:
-    #   type: none
-    #   device: ~/data/n8n
-    #   o: bind
+    driver: local
+    driver_opts:
+      type: none
+      device: ${HOME}/data/n8n
+      o: bind
 
 secrets:
   wordpress_admin_password:
