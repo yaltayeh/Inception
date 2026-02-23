@@ -2,7 +2,7 @@ FROM debian:12-slim
 
 # Install MariaDB and cleanup apt cache
 RUN apt-get update && \
-    apt-get install -y mariadb-server && \
+    apt-get install -y mariadb-server passwd && \
     rm -rf /var/lib/apt/lists/*
 
 # Expose default MariaDB port

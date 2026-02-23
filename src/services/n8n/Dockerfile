@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y \
     gnupg \
     tzdata \
     bash \
+    gosu \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Node.js 20 (LTS)
@@ -30,7 +31,9 @@ RUN npm install -g n8n
 RUN mkdir -p /home/node/.n8n \
     && chown -R node:node /home/node
 
-USER node
+# Copy entrypoint script
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 EXPOSE 5678
 
@@ -38,5 +41,5 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD curl -f http://localhost:5678/health || exit 1
 
 # Important: exec form for proper PID 1 handling
-ENTRYPOINT ["n8n"]
+ENTRYPOINT ["/entrypoint.sh"]
 CMD [ ]

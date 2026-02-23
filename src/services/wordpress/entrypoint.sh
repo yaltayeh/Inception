@@ -1,6 +1,19 @@
 #!/bin/sh
 set -e
 
+# Adjust www-data user UID/GID to match host user if specified
+if [ -n "$HOST_UID" ] && [ "$HOST_UID" != "$(id -u www-data)" ]; then
+    echo "Adjusting www-data user UID to $HOST_UID..."
+    usermod -u "$HOST_UID" www-data
+fi
+if [ -n "$HOST_GID" ] && [ "$HOST_GID" != "$(getent group www-data | cut -d: -f3)" ]; then
+    echo "Adjusting www-data group GID to $HOST_GID..."
+    groupmod -g "$HOST_GID" www-data
+fi
+
+# Fix ownership of working directories
+chown -R www-data:www-data /var/www/html /run/php-fpm 2>/dev/null || true
+
 # Function to read secrets from files or environment variables
 read_secret() {
     local secret_name="$1"

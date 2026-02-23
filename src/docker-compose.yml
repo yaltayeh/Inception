@@ -6,6 +6,8 @@ services:
     environment:
       - MYSQL_DATABASE=${MYSQL_DATABASE:-wordpress}
       - MYSQL_USER=${MYSQL_USER:-wordpress}
+      - HOST_UID=${HOST_UID:-1000}
+      - HOST_GID=${HOST_GID:-1000}
     ports:
       - "3306:3306"
     volumes:
@@ -33,6 +35,15 @@ services:
         target: nginx_ssl_keys/${DOMAIN_NAME:-localhost}.crt
     restart: unless-stopped
 
+  nextjs:
+    build: ./services/nextjs
+    container_name: nextjs
+    environment:
+      - HOST_UID=${HOST_UID:-1000}
+      - HOST_GID=${HOST_GID:-1000}
+      - DOMAIN_NAME=${DOMAIN_NAME:-localhost}
+    restart: unless-stopped
+
   wordpress:
     build: ./services/wordpress
     container_name: wordpress
@@ -50,6 +61,8 @@ services:
       - WORDPRESS_LOCALE=${WORDPRESS_LOCALE:-en_US}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - HOST_UID=${HOST_UID:-1000}
+      - HOST_GID=${HOST_GID:-1000}
     volumes:
       - web_data:/var/www/html
     secrets:
@@ -76,6 +89,8 @@ services:
       - N8N_USER_EMAIL=admin@${DOMAIN_NAME:-localhost}
       - N8N_USER_FIRST_NAME=Admin
       - N8N_USER_LAST_NAME=User
+      - HOST_UID=${HOST_UID:-1000}
+      - HOST_GID=${HOST_GID:-1000}
     volumes:
       - n8n_data:/home/node/.n8n
     restart: unless-stopped

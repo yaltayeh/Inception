@@ -13,6 +13,16 @@ read_secret() {
     fi
 }
 
+# Adjust mysql user UID/GID to match host user if specified
+if [ -n "$HOST_UID" ] && [ "$HOST_UID" != "$(id -u mysql)" ]; then
+    echo "Adjusting mysql user UID to $HOST_UID..."
+    usermod -u "$HOST_UID" mysql
+fi
+if [ -n "$HOST_GID" ] && [ "$HOST_GID" != "$(getent group mysql | cut -d: -f3)" ]; then
+    echo "Adjusting mysql group GID to $HOST_GID..."
+    groupmod -g "$HOST_GID" mysql
+fi
+
 MYSQL_DATABASE=$(read_secret mysql_database $MYSQL_DATABASE "my_database")
 MYSQL_USER=$(read_secret mysql_user $MYSQL_USER "my_user")
 MYSQL_USER_PASSWORD=$(read_secret mysql_user_password $MYSQL_USER_PASSWORD "user_password")
